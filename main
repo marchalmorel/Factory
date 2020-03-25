@@ -1,0 +1,98 @@
+enum PersonCategory {
+    Infant,
+    Child,
+    Adult,
+    Undefined
+}
+
+interface IPerson {
+    category: PersonCategory;
+    canSignContracts(): boolean;
+    printDetails(): void;
+}
+
+abstract class Person implements IPerson {
+    public category: PersonCategory;
+    private dateOfBirth: Date;
+
+    protected constructor(dateOfBirth: Date) {
+        this.dateOfBirth = dateOfBirth;
+        this.category = PersonCategory.Undefined;
+    }
+
+    abstract canSignContracts(): boolean;
+    printDetails(): void {
+        console.log(`Person: `);
+        console.log(`Date of Birth: ${this.dateOfBirth.toDateString()}`);
+        console.log(`Category: ${PersonCategory[this.category]}`);
+        console.log(`Can sign: ${this.canSignContracts()}`);
+        console.log('------------------------------------');
+    }
+}
+
+class Infant extends Person {
+    constructor(dateOfBirth: Date) {
+        super(dateOfBirth);
+        this.category = PersonCategory.Infant;
+    }
+
+    canSignContracts(): boolean {
+        return false;
+    }
+}
+
+class Child extends Person {
+    constructor(dateOfBirth: Date) {
+        super(dateOfBirth);
+        this.category = PersonCategory.Child;
+    }
+
+    canSignContracts(): boolean {
+        return false;
+    }
+}
+
+class Adult extends Person {
+    constructor(dateOfBirth: Date) {
+        super(dateOfBirth);
+        this.category = PersonCategory.Adult;
+    }
+
+    canSignContracts(): boolean {
+        return true;
+    }
+}
+
+class PersonFactory {
+    getPerson(dateOfBirth: Date): IPerson {
+        let dateNow = new Date();
+        let currentMonth = dateNow.getMonth() + 1;
+        let currentDate = dateNow.getDate(); // days
+        let dateTwoYearsAgo = new Date(
+            dateNow.getFullYear() - 2, currentMonth, currentDate);
+        let date18YearsAgo = new Date(
+            dateNow.getFullYear() - 18, currentMonth, currentDate);
+
+        if (dateOfBirth >= dateTwoYearsAgo) {
+            return new Infant(dateOfBirth);
+        }
+
+        if (dateOfBirth >= date18YearsAgo) {
+            return new Child(dateOfBirth);
+        }
+
+        return new Adult(dateOfBirth);
+    }
+}
+
+const personFactory = new PersonFactory();
+
+const p1 = personFactory.getPerson(new Date());
+const p2 = personFactory.getPerson(new Date(2019, 0 , 20));
+const p3 = personFactory.getPerson(new Date(2010, 0 , 14));
+const p4 = personFactory.getPerson(new Date(1993, 0 , 2));
+
+p1.printDetails();
+p2.printDetails();
+p3.printDetails();
+p4.printDetails();
